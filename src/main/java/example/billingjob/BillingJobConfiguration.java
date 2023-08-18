@@ -104,8 +104,8 @@ public class BillingJobConfiguration {
 	}
 
 	@Bean
-	public BillingDataProcessor billingDataProcessor() {
-		return new BillingDataProcessor();
+	public BillingDataProcessor billingDataProcessor(PricingService pricingService) {
+		return new BillingDataProcessor(pricingService);
 	}
 
 	@Bean
@@ -129,6 +129,9 @@ public class BillingJobConfiguration {
 				.processor(billingDataProcessor)
 				.writer(billingDataFileWriter)
 				.transactionManager(transactionManager)
+				.faultTolerant()
+				.retry(PricingException.class)
+				.retryLimit(100)
 				.build();
 	}
 
